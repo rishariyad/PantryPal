@@ -1,7 +1,5 @@
 # PantryPal
 
-A new Flutter project.
-
 ## Smart Recipe Generator for Zero Food Waste
 
 PantryPal is an app designed to help users reduce food waste by providing personalized recipe suggestions and meal planning based on ingredients they already have. It also offers tips on sustainability and food waste reduction, while ensuring that users can enjoy a seamless experience, even offline.
