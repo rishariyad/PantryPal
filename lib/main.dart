@@ -3,36 +3,30 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import '/screens/login_screen.dart';
 import 'screens/home_screen.dart';
-import 'package:flutter/foundation.dart' show kIsWeb;
 import 'firebase_options.dart';
 import 'screens/splash_screen.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart'; // Example using dotenv package
+import 'package:firebase_remote_config/firebase_remote_config.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  if (kIsWeb) {
-    await Firebase.initializeApp(
-      options: firebaseOptions,
-      // options: firebaseOptions.currentPlatform,
-    );
-  } else {
-    await Firebase.initializeApp();
-  }
-  // await dotenv.load(fileName: ".env"); // Load the .env file
-  // Initialize Firebase
-  await loadEnv(); // Load the environment variables
+  await Firebase.initializeApp(
+    options: firebaseOptions,
+  );
+  await Firebase.initializeApp(); // Initialize Firebase
+  await setupRemoteConfig(); // Initialize Remote Config
+
   runApp(MyApp());
 }
 
-Future<void> loadEnv() async {
-  if (kIsWeb) {
-    // For web: Manually load environment variables (but not hardcoded)
-    dotenv
-        .testLoad(); // You will handle the API key through a web service later
-  } else {
-    // For mobile: Load environment variables from .env file
-    await dotenv.load(fileName: ".env");
-  }
+Future<void> setupRemoteConfig() async {
+  FirebaseRemoteConfig remoteConfig = FirebaseRemoteConfig.instance;
+
+  // Set default values and fetch the latest config
+  await remoteConfig.setDefaults(<String, dynamic>{
+    'openai_api_key': 'default_api_key', // A default value (if needed)
+  });
+
+  await remoteConfig.fetchAndActivate(); // Fetches the latest config
 }
 
 class MyApp extends StatelessWidget {
@@ -44,20 +38,15 @@ class MyApp extends StatelessWidget {
         primarySwatch: Colors.blue,
         brightness: Brightness.dark,
       ),
-      // home: SplashScreen(),
-      // home: AuthWrapper(), // Initial screen after authentication
       home: StreamBuilder<User?>(
         stream: FirebaseAuth.instance.authStateChanges(),
         builder: (context, snapshot) {
-          // If the snapshot is loading
           if (snapshot.connectionState == ConnectionState.waiting) {
-            return SplashScreen(); // Show the splash screen while loading
+            return SplashScreen();
           }
-          // If user is signed in, show the AuthWrapper (or HomeScreen)
           if (snapshot.hasData) {
-            return AuthWrapper(); // Change to your actual HomeScreen if needed
+            return AuthWrapper();
           }
-          // If user is not signed in, show the splash screen or login screen
           return SplashScreen();
         },
       ),
@@ -68,14 +57,11 @@ class MyApp extends StatelessWidget {
 class AuthWrapper extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    // Check if the user is currently logged in
     User? user = FirebaseAuth.instance.currentUser;
-
-    // If the user is logged in, show HomeScreen, otherwise show LoginScreen
     if (user == null) {
-      return LoginScreen(); // Show login if not authenticated
+      return LoginScreen();
     } else {
-      return HomeScreen(); // Show home if authenticated
+      return HomeScreen();
     }
   }
 }

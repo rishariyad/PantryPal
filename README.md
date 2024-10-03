@@ -14,3 +14,14 @@ Key Features:
 - Social Sharing: Users can share their favorite recipes with others and explore community-generated recipes.
 - Zero Waste Tips & Insights: The app provides tips on reducing food waste and tracks the user's impact on sustainability over time.
 
+### Setup Firebase Configuration
+
+Before running the project, you must configure Firebase for your own project:
+
+1. **Create a Firebase project** at [Firebase Console](https://console.firebase.google.com/).
+2. **Add Firebase to your Flutter app**:
+   - Download the `google-services.json` file for Android and place it in `android/app/`.
+   - Download the `GoogleService-Info.plist` for iOS and place it in `ios/Runner/`.
+   - Follow the Firebase setup steps to generate the `firebase_options.dart` file using the `flutterfire` CLI.
+3. **Set up Firebase Remote Config**:
+   - In Firebase Console, go to **Remote Config** and add a parameter `openai_api_key` with your own OpenAI API key.

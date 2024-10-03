@@ -1,19 +1,21 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
-import 'package:firebase_auth/firebase_auth.dart'; // For Firebase Authentication
-import 'package:cloud_firestore/cloud_firestore.dart'; // For Firestore database
-// import 'dart:convert'; // For JSON encoding/decoding
-import 'package:flutter_dotenv/flutter_dotenv.dart'; // Example using dotenv package
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_remote_config/firebase_remote_config.dart';
 
 class RecipeService {
-  final String apiKey = dotenv.env['OPENAI_API_KEY'] ??
-      'No API Key Found'; // Use environment variables
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+  final FirebaseRemoteConfig _remoteConfig = FirebaseRemoteConfig.instance;
+
+  // Method to get the API key from Firebase Remote Config
+  String get apiKey {
+    return _remoteConfig.getString('openai_api_key');
+  }
 
   Future<String> generateRecipe(List<String> ingredients) async {
     User? user = _auth.currentUser;
-
     // Load user profile from Firestore
     DocumentSnapshot profileSnapshot =
         await _firestore.collection('profiles').doc(user?.uid).get();
@@ -57,22 +59,19 @@ class RecipeService {
           Uri.parse('https://api.openai.com/v1/chat/completions'),
           headers: {
             'Content-Type': 'application/json',
-            'Authorization': 'Bearer $apiKey',
+            'Authorization': 'Bearer $apiKey', // Use the proper API key
           },
           body: jsonEncode({
-            'model': 'gpt-3.5-turbo', // Use the correct model
+            'model': 'gpt-3.5-turbo',
             'messages': [
               {
                 'role': 'system',
                 'content':
-                    // 'You are a helpful assistant that suggests recipes based on ingredients.'
                     'You are a helpful assistant that suggests personalized recipes based on ingredients, tastes, and dietary needs.'
               },
               {
                 'role': 'user',
-                // 'content':
-                //     'Suggest a recipe with the following ingredients: ${ingredients.join(", ")}'
-                'content': personalizedPrompt
+                'content': personalizedPrompt,
               }
             ],
             'max_tokens': 200,
@@ -80,13 +79,10 @@ class RecipeService {
         );
 
         if (response.statusCode == 200) {
-          // final data = jsonDecode(response.body);
-          // return data['choices'][0]['text'].trim();
-
           final data = jsonDecode(response.body);
           final recipe = data['choices'][0]['message']['content'];
           if (recipe != null) {
-            return recipe.trim(); // Only trim if recipe is not null
+            return recipe.trim();
           } else {
             throw Exception('Failed to generate recipe: No content returned');
           }

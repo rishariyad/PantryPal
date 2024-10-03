@@ -1,10 +1,3 @@
-allprojects {
-    repositories {
-        google()
-        mavenCentral()
-    }
-}
-
 plugins {
     id("com.google.gms.google-services") version "4.4.2" apply false
 }
@@ -21,7 +14,38 @@ tasks.register("clean", Delete) {
     delete rootProject.buildDir
 }
 
-dependencies {
-  classpath 'com.google.gms:google-services:4.3.3'
+allprojects {
+    repositories {
+        google()
+        mavenCentral()
+    }
 }
 
+
+
+// plugins {
+//     id("com.google.gms.google-services") version "4.4.2" apply false
+// }
+
+// rootProject.buildDir = "../build"
+// subprojects {
+//     project.buildDir = "${rootProject.buildDir}/${project.name}"
+// }
+// subprojects {
+//     project.evaluationDependsOn(":app")
+// }
+
+// tasks.register("clean", Delete) {
+//     delete rootProject.buildDir
+// }
+
+// dependencies {
+//   classpath 'com.google.gms:google-services:4.3.3'
+// }
+
+// allprojects {
+//     repositories {
+//         google()
+//         mavenCentral()
+//     }
+// }

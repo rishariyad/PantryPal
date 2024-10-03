@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:pantrypal/screens/login_screen.dart';
-// import '/screens/home_screen.dart'; // Update with your actual home screen import
 
 class SplashScreen extends StatefulWidget {
   @override
@@ -15,9 +14,7 @@ class _SplashScreenState extends State<SplashScreen> {
     Future.delayed(Duration(seconds: 3), () {
       Navigator.pushReplacement(
         context,
-        MaterialPageRoute(
-            builder: (context) =>
-                LoginScreen()), // Change this to your actual home screen
+        MaterialPageRoute(builder: (context) => LoginScreen()),
       );
     });
   }
@@ -30,10 +27,8 @@ class _SplashScreenState extends State<SplashScreen> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            // Add your logo or app name here
-            Image.asset('/logo.png',
-                height: 100), // Replace with your logo path
-            SizedBox(height: 20),
+            Image.asset('logo.png', height: 200),
+            SizedBox(height: 100),
             Text(
               'PantryPal',
               style: TextStyle(
